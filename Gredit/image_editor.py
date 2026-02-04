@@ -1,17 +1,53 @@
+import functools
 import itertools
 import logging
-import functools
 from collections import defaultdict
 from pathlib import Path
 from typing import Callable
 
 import dearpygui.dearpygui as dpg
 
+import Gredit.Graph as Nodes
 from Application import Image
 from Gredit.Graph.graph_abc import EdgeGui, Graph, Node
-import Gredit.Graph as Nodes
 
 logger = logging.getLogger("GUI.Editor")
+
+
+def load_graph_window(load_callback):
+    with dpg.window(
+        label="Load Workflow",
+        modal=True,
+        tag="Workflows",
+        width=380,
+        height=440,
+        no_resize=True,
+        no_move=True,
+        on_close=lambda: dpg.delete_item("Workflows"),
+    ):
+        dpg.add_input_text(
+            hint="Search workflows...",
+            width=-1,
+            callback=lambda s, a: dpg.set_value(filter, a),
+        )
+        with dpg.child_window():
+            filter = dpg.add_filter_set()
+        for file in Path("./Data/Workflows/").iterdir():
+            with dpg.group(horizontal=True, filter_key=file.name, parent=filter):
+                dpg.add_button(
+                    label=file.name,
+                    width=-1,
+                    callback=lambda: load_callback(file.name),
+                )
+
+    dpg.split_frame()
+    modal_size = dpg.get_item_rect_size("Workflows")
+    win_size = dpg.get_item_rect_size("Primary Window")
+
+    dpg.configure_item(
+        "Workflows",
+        pos=[(win_size[i] - modal_size[i]) / 2 for i in range(2)],
+    )
 
 
 class EditingWindow:
@@ -24,7 +60,10 @@ class EditingWindow:
                     dpg.add_menu_item(label="Save", callback=self.save_graph)
                     with dpg.tooltip(dpg.last_item()):
                         dpg.add_text("Save graph as a workflow")
-                    dpg.add_menu_item(label="Load", callback=self.load_graph_window)
+                    dpg.add_menu_item(
+                        label="Load",
+                        callback=lambda: load_graph_window(self.load_graph),
+                    )
                     with dpg.tooltip(dpg.last_item()):
                         dpg.add_text("Load workflow")
                     dpg.add_menu_item(
@@ -219,41 +258,6 @@ class EditingWindow:
         window_dimensions = dpg.get_item_rect_size("Primary Window")
         newPos = [(window_dimensions[i] - modal_dimensions[i]) / 2 for i in range(2)]
         dpg.configure_item(saviour, pos=newPos)
-
-    def load_graph_window(self):
-        with dpg.window(
-            label="Load Workflow",
-            modal=True,
-            tag="Workflows",
-            width=380,
-            height=440,
-            no_resize=True,
-            no_move=True,
-            on_close=lambda: dpg.delete_item("Workflows"),
-        ):
-            dpg.add_input_text(
-                hint="Search workflows...",
-                width=-1,
-                callback=lambda s, a: dpg.set_value(filter, a),
-            )
-            with dpg.child_window():
-                filter = dpg.add_filter_set()
-            for file in Path("./Data/Workflows/").iterdir():
-                with dpg.group(horizontal=True, filter_key=file.name, parent=filter):
-                    dpg.add_button(
-                        label=file.name,
-                        width=-1,
-                        callback=lambda: self.load_graph(file.name),
-                    )
-
-        dpg.split_frame()
-        modal_size = dpg.get_item_rect_size("Workflows")
-        win_size = dpg.get_item_rect_size("Primary Window")
-
-        dpg.configure_item(
-            "Workflows",
-            pos=[(win_size[i] - modal_size[i]) / 2 for i in range(2)],
-        )
 
     def load_graph(self, filename):
         for node in self.graph.load_nodes(filename, visual_mode=True):

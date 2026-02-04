@@ -6,7 +6,6 @@ from Application import ImageManager
 from Application.utils import ShittyMultiThreading
 from Gredit.image_editor import EditingWindow
 
-
 logger = logging.getLogger("GUI.Image")
 
 
@@ -70,9 +69,9 @@ class ImageWindow:
                 dpg.add_button(
                     label="Edit",
                     callback=lambda: EditingWindow(
-                        self.image_manager.load(self.image_manager.current_index),
+                        self.image_manager.load(self.current_image),
                         on_close=lambda: self.open(
-                            self.image_manager.current_index, force_reload=True
+                            self.current_image, force_reload=True
                         ),
                     ),
                 )
@@ -97,4 +96,3 @@ class ImageWindow:
             self.open(self.current_image - 1)
         else:
             self.open(self.image_manager.end_index - 1)
-
