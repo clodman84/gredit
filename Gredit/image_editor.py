@@ -14,6 +14,14 @@ from Gredit.Graph.graph_abc import EdgeGui, Graph, Node
 logger = logging.getLogger("GUI.Editor")
 
 
+def callback_with_delete(parameter, callback, to_delete="Workflows"):
+    def f():
+        dpg.delete_item(to_delete)
+        callback(parameter)
+
+    return f
+
+
 def load_graph_window(load_callback):
     with dpg.window(
         label="Load Workflow",
@@ -34,12 +42,11 @@ def load_graph_window(load_callback):
             filter = dpg.add_filter_set()
         for file in Path("./Data/Workflows/").iterdir():
             with dpg.group(horizontal=True, filter_key=file.name, parent=filter):
-
-                def callback():
-                    dpg.delete_item("Workflows")
-                    load_callback(file.name)
-
-                dpg.add_button(label=file.name, width=-1, callback=callback)
+                dpg.add_button(
+                    label=file.name,
+                    width=-1,
+                    callback=callback_with_delete(file.name, load_callback),
+                )
 
     dpg.split_frame()
     modal_size = dpg.get_item_rect_size("Workflows")
