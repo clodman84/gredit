@@ -1,3 +1,4 @@
+import functools
 import logging
 
 import dearpygui.dearpygui as dpg
@@ -79,6 +80,13 @@ class ImageWindow:
                     )
                     with dpg.tooltip(dpg.last_item()):
                         dpg.add_text("Apply saved workflow to this image")
+                    dpg.add_menu_item(
+                        label="Apply Workflow to All",
+                        callback=lambda: load_graph_window(self.load_graph_all),
+                    )
+                    with dpg.tooltip(dpg.last_item()):
+                        dpg.add_text("Apply saved workflow to all images in folder")
+
             with dpg.group(horizontal=False):
                 self.loading_indicator = dpg.add_loading_indicator()
                 dpg.hide_item(self.loading_indicator)
@@ -98,9 +106,18 @@ class ImageWindow:
         dpg.set_value(f"{self.parent}_Main Image", image.dpg_texture)
         dpg.set_value(f"{self.parent}_Image Slider", self.current_image + 1)
 
-    def load_graph(self, filename):
+    def load_graph_all(self, filename):
+        ShittyMultiThreading(
+            functools.partial(self.load_graph, filename),
+            range(self.image_manager.end_index),
+        ).start()
+
+    def load_graph(self, filename, image_index=None):
+        logger.info(f"Processing image: {image_index}")
         graph = Graph()
-        image = self.image_manager.load(self.current_image)
+        if not image_index:
+            image_index = self.current_image
+        image = self.image_manager.load(image_index)
         for node in graph.load_nodes(filename):
             # ignore your lsp this shit sucks ass I know, but fuck it
             if node.label == "Import":
@@ -120,12 +137,10 @@ class ImageWindow:
                 made_edge = Edge("a", None, input, output, input_attr, output_attr)
                 graph.link(input, output, made_edge)
 
-        print("Processing Image")
         dpg.show_item(self.loading_indicator)
         graph.evaluate(is_final=True)
         dpg.hide_item(self.loading_indicator)
-        print("Done!")
-        self.open(self.current_image, force_reload=True)
+        self.open(image_index, force_reload=True)
 
     def next(self):
         if self.current_image < self.image_manager.end_index - 1:

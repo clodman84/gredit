@@ -1,4 +1,5 @@
 import logging
+
 import dearpygui.dearpygui as dpg
 from PIL import ImageEnhance
 
@@ -57,7 +58,7 @@ class EnhanceNode(Node):
             image: Image = edge.data
             if image:
                 enhancer = self.enhancement(image.raw_image)
-                factor = dpg.get_value(self.slider)
+                factor = self.settings["value"]
                 updated_image = enhancer.enhance(factor=factor)
                 image = Image(image.path, updated_image, (600, 600), (200, 200))
 
