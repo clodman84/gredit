@@ -1,17 +1,16 @@
-import logging
-import json
-import time
-from pathlib import Path
 import functools
 import itertools
-
-from dearpygui import dearpygui as dpg
-from collections import defaultdict, deque
-
+import json
+import logging
+import time
 from abc import ABC, ABCMeta, abstractmethod
+from collections import defaultdict, deque
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Callable, Literal
 from uuid import uuid1
+
+from dearpygui import dearpygui as dpg
 
 logger = logging.getLogger("GUI.GraphABC")
 
@@ -44,7 +43,7 @@ def update_exec_time(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         if not self.visual_mode:
-            return
+            return func(self, *args, **kwargs)
         dpg.show_item(self.loading)
         start = time.perf_counter()
         result = func(self, *args, **kwargs)
@@ -321,7 +320,7 @@ class Graph:
             self.node_lookup_by_uuid[node.uuid] = node
         self.adjacency_list[node] = []
 
-    def link(self, input: Node, output: Node, edge: EdgeGui):
+    def link(self, input: Node, output: Node, edge: Edge):
         self.edge_lookup_by_edge_id[edge.id] = edge
         self.adjacency_list[input].append(output)
         logger.debug(self.edge_lookup_by_edge_id)
@@ -395,18 +394,14 @@ class Graph:
         with open(Path(f"./Data/Workflows/{filename}.json"), "w") as file:
             json.dump(graph, file)
 
-    def load_nodes(self, filename: str, visual_mode=False):
+    def load_nodes(self, filename: str):
         with open(Path(f"./Data/Workflows/{filename}"), "r") as file:
             graph = json.load(file)
 
         for uuid, node in graph["Nodes"].items():
-            if node["type"] == "ImageNode":
-                continue
             constructed_node: Node = Node.REGISTRY[node["type"]](
                 settings=node["settings"], uuid=uuid
             )
-            if not visual_mode:
-                self.add_node(constructed_node)
             yield constructed_node
 
     def load_node_output_attributes(self, filename: str, visual_mode=False):
@@ -414,6 +409,6 @@ class Graph:
             graph = json.load(file)
 
         for node in graph["Nodes"].values():
-            if node["type"] == "ImageNode":
+            if node["type"] == "ImageNode" and visual_mode:
                 continue
             yield node["output_edges"]

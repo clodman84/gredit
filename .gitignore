@@ -160,12 +160,7 @@ cython_debug/
 .idea/
 
 
-# test rollbook
-30R/
-30R_original/
-# billed rolls
+Test/
 Data/*
-!Data/Audio
-!Data/schema.sql
-!Data/face_detection_yunet_2023mar.onnx
+Data_Original/*
 !Data/Workflows

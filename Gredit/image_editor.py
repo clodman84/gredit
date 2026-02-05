@@ -34,11 +34,12 @@ def load_graph_window(load_callback):
             filter = dpg.add_filter_set()
         for file in Path("./Data/Workflows/").iterdir():
             with dpg.group(horizontal=True, filter_key=file.name, parent=filter):
-                dpg.add_button(
-                    label=file.name,
-                    width=-1,
-                    callback=lambda: load_callback(file.name),
-                )
+
+                def callback():
+                    dpg.delete_item("Workflows")
+                    load_callback(file.name)
+
+                dpg.add_button(label=file.name, width=-1, callback=callback)
 
     dpg.split_frame()
     modal_size = dpg.get_item_rect_size("Workflows")
@@ -260,7 +261,9 @@ class EditingWindow:
         dpg.configure_item(saviour, pos=newPos)
 
     def load_graph(self, filename):
-        for node in self.graph.load_nodes(filename, visual_mode=True):
+        for node in self.graph.load_nodes(filename):
+            if node.label == "Import":
+                continue
             node.init_dpg(self.node_editor, self.graph.evaluate)
             node.setup_attributes()
             self.add_node(node)

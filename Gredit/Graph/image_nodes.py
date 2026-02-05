@@ -10,7 +10,9 @@ logger = logging.getLogger("GUI.ImageNodes")
 
 
 class ImageNode(Node):
-    def __init__(self, image: Image, label="Import", is_inspect=False, **kwargs):
+    def __init__(
+        self, image: Image | None = None, label="Import", is_inspect=False, **kwargs
+    ):
         super().__init__(label, is_inspect, **kwargs)
         self.image = image
 

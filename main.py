@@ -10,6 +10,7 @@ from themes import create_gruvbox_dark_theme
 
 logger = logging.getLogger("Core.Main")
 
+
 def start_editing(path: Path):
     main_image_ratio = 0.7
     monitors = get_monitors()
@@ -37,6 +38,7 @@ def start_editing(path: Path):
 def load_image_folder(sender, app_data, user_data):
     path = Path(app_data["file_path_name"])
     start_editing(path)
+
 
 def main():
     dpg.create_context()
@@ -80,7 +82,6 @@ def main():
             height=400,
         )
 
-
         with dpg.menu_bar():
             with dpg.menu(label="File"):
                 dpg.add_menu_item(
@@ -104,10 +105,11 @@ def main():
 
     import sys
 
-    sys.stderr = log
+    # sys.stderr = log
 
     if sys.platform == "win32":
         from ctypes import windll
+
         import pywinstyles
 
         hwnd = windll.user32.FindWindowW(None, "Gredit")
