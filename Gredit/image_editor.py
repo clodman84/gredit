@@ -157,6 +157,9 @@ class EditingWindow:
                         dpg.add_text(
                             "Displays RGB distribution of the connected image."
                         )
+
+                with dpg.menu(label="Math"):
+                    dpg.add_menu_item(label="Float Out", callback=self.add_math_node)
                 dpg.add_menu_item(label="Auto Layout", callback=self.auto_arrange)
 
             with dpg.node_editor(
@@ -292,6 +295,12 @@ class EditingWindow:
 
     def add_rgb_splitter_node(self):
         node = Nodes.RGBSplitter()
+        node.init_dpg(parent=self.node_editor, update_hook=self.graph.evaluate)
+        node.setup_attributes()
+        self.add_node(node)
+
+    def add_math_node(self):
+        node = Nodes.MathNode()
         node.init_dpg(parent=self.node_editor, update_hook=self.graph.evaluate)
         node.setup_attributes()
         self.add_node(node)

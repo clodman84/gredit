@@ -207,10 +207,15 @@ class Node(ABC, metaclass=TimedMeta):
         self.update_hook = update_hook
         self.delete_hook = delete_hook
 
-    def add_attribute(self, label, attribute_type):
+    def add_attribute(
+        self, label, attribute_type, attribute_style=dpg.mvNode_PinShape_CircleFilled
+    ):
         if self.visual_mode and self.id:
             attribute_id = dpg.add_node_attribute(
-                parent=self.id, label=label, attribute_type=attribute_type
+                parent=self.id,
+                label=label,
+                attribute_type=attribute_type,
+                shape=attribute_style,
             )
         else:
             attribute_id = str(uuid1())

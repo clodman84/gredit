@@ -5,7 +5,7 @@ from PIL import ImageEnhance
 
 from Application import Image
 
-from .graph_abc import Node
+from .graph_abc import Edge, Node
 
 logger = logging.getLogger("GUI.EnhanceNodes")
 
@@ -30,6 +30,12 @@ class EnhanceNode(Node):
         self.image_output_attribute = self.add_attribute(
             label="Out", attribute_type=dpg.mvNode_Attr_Output
         )
+        self.float_input_attribute = self.add_attribute(
+            label="Float",
+            attribute_type=dpg.mvNode_Attr_Input,
+            attribute_style=dpg.mvNode_PinShape_TriangleFilled,
+        )
+
         if self.visual_mode:
             self.slider = dpg.add_input_float(
                 parent=self.image_attribute,
@@ -39,14 +45,21 @@ class EnhanceNode(Node):
             )
 
     def update_settings(self):
+        if self.input_attributes[self.float_input_attribute]:
+            edge = self.input_attributes[self.float_input_attribute][0]
+            self.settings["value"] = edge.data
+            if self.visual_mode:
+                dpg.set_value(self.slider, edge.data)
+            return
+
         if self.visual_mode:
             self.settings["value"] = dpg.get_value(self.slider)
 
-    def validate_input(self, edge, attribute_id) -> bool:
+    def validate_input(self, edge: Edge, attribute_id) -> bool:
         # only permitting a single connection
-        if self.input_attributes[self.image_attribute]:
+        if self.input_attributes[edge.output_attribute_id]:
             logger.warning(
-                "Invalid! You can only connect one image node to preview node"
+                "Invalid! You can only connect one image node to enhance node"
             )
             return False
         return True
