@@ -159,7 +159,13 @@ class EditingWindow:
                         )
 
                 with dpg.menu(label="Math"):
-                    dpg.add_menu_item(label="Float Out", callback=self.add_math_node)
+                    dpg.add_menu_item(
+                        label="Float Out", callback=self.add_float_out_node
+                    )
+                    dpg.add_menu_item(
+                        label="Average Brightness",
+                        callback=self.add_average_brightness_node,
+                    )
                 dpg.add_menu_item(label="Auto Layout", callback=self.auto_arrange)
 
             with dpg.node_editor(
@@ -299,8 +305,14 @@ class EditingWindow:
         node.setup_attributes()
         self.add_node(node)
 
-    def add_math_node(self):
-        node = Nodes.MathNode()
+    def add_average_brightness_node(self):
+        node = Nodes.AverageBrightness()
+        node.init_dpg(parent=self.node_editor, update_hook=self.graph.evaluate)
+        node.setup_attributes()
+        self.add_node(node)
+
+    def add_float_out_node(self):
+        node = Nodes.FloatOut()
         node.init_dpg(parent=self.node_editor, update_hook=self.graph.evaluate)
         node.setup_attributes()
         self.add_node(node)

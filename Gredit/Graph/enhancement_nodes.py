@@ -47,9 +47,10 @@ class EnhanceNode(Node):
     def update_settings(self):
         if self.input_attributes[self.float_input_attribute]:
             edge = self.input_attributes[self.float_input_attribute][0]
-            self.settings["value"] = edge.data
-            if self.visual_mode:
-                dpg.set_value(self.slider, edge.data)
+            if edge.data:
+                self.settings["value"] = edge.data
+                if self.visual_mode:
+                    dpg.set_value(self.slider, edge.data)
             return
 
         if self.visual_mode:
