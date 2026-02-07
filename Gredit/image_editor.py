@@ -115,7 +115,7 @@ class EditingWindow:
                         dpg.add_text(
                             "Adjust colour in shadows, midtones and highlights independently."
                         )
-
+                    dpg.add_menu_item(label="Multiply", callback=self.add_multiply_node)
                     dpg.add_menu_item(label="Levels", callback=self.add_levels_node)
                     with dpg.tooltip(dpg.last_item()):
                         dpg.add_text(
@@ -165,6 +165,10 @@ class EditingWindow:
                     dpg.add_menu_item(
                         label="Average Brightness",
                         callback=self.add_average_brightness_node,
+                    )
+                    dpg.add_menu_item(
+                        label="Divide",
+                        callback=self.add_divide_node,
                     )
                 dpg.add_menu_item(label="Auto Layout", callback=self.auto_arrange)
 
@@ -305,8 +309,20 @@ class EditingWindow:
         node.setup_attributes()
         self.add_node(node)
 
+    def add_multiply_node(self):
+        node = Nodes.Multiply()
+        node.init_dpg(parent=self.node_editor, update_hook=self.graph.evaluate)
+        node.setup_attributes()
+        self.add_node(node)
+
     def add_average_brightness_node(self):
         node = Nodes.AverageBrightness()
+        node.init_dpg(parent=self.node_editor, update_hook=self.graph.evaluate)
+        node.setup_attributes()
+        self.add_node(node)
+
+    def add_divide_node(self):
+        node = Nodes.DivideNode()
         node.init_dpg(parent=self.node_editor, update_hook=self.graph.evaluate)
         node.setup_attributes()
         self.add_node(node)

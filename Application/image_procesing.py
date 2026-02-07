@@ -143,4 +143,14 @@ def levels(img: PImage.Image, black, white, gamma):
 
 def average_brightness(img: PImage.Image) -> float:
     arr = np.asarray(img, dtype=np.float32)
-    return float(arr.mean())
+    rgb = arr[..., :3]
+    return float(rgb.mean())
+
+
+def multiply(img: PImage.Image, factor: float) -> PImage.Image:
+    arr = np.asarray(img, dtype=np.float32)
+
+    arr[..., :3] *= factor  # scale RGB only
+    arr[..., :3] = np.clip(arr[..., :3], 0, 255)
+
+    return PImage.fromarray(arr.astype(np.uint8), img.mode)

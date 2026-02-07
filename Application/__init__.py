@@ -6,6 +6,7 @@ from .image_procesing import (
     get_rgb_histogram,
     levels,
     merge,
+    multiply,
     split_rgb,
     split_smh,
 )
