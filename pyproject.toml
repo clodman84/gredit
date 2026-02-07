@@ -1,0 +1,12 @@
+[project]
+name = "Gredit"
+version = "0.1.0"
+description = "Graph Based Image Editor"
+
+[tool.cxfreeze]
+executables = [
+    {script = "main.py", base = "gui", icon="gredit"}
+]
+
+[tool.cxfreeze.build_exe]
+optimize = 2
