@@ -6,7 +6,6 @@ import dearpygui.dearpygui as dpg
 from Application import ImageManager
 from Application.utils import ShittyMultiThreading
 from Gredit.Graph.graph_abc import Edge, Graph, Node
-from Gredit.Graph.image_nodes import ImageNode
 from Gredit.image_editor import EditingWindow, load_graph_window
 
 logger = logging.getLogger("GUI.Image")
