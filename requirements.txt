@@ -1,11 +1,12 @@
 cffi==1.17.1
 cfgv==3.4.0
 cx_Freeze==8.5.3
-dearpygui
+dearpygui==2.1.1
 distlib==0.4.0
 filelock==3.20.3
 freeze-core==0.5.0
 identify==2.6.13
+line_profiler==5.0.0
 nodeenv==1.9.1
 numpy==2.2.6
 opencv-python==4.12.0.88
@@ -20,6 +21,5 @@ pywinstyles==1.8
 PyYAML==6.0.2
 screeninfo==0.8.1
 setuptools==80.9.0
-sounddevice==0.5.2
 soundfile==0.13.1
 virtualenv==20.34.0
