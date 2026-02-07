@@ -63,7 +63,7 @@ class ImageWindow:
                 dpg.add_menu_item(label="Next", callback=self.next)
                 with dpg.menu(label="Edit"):
                     dpg.add_menu_item(
-                        label="Edit",
+                        label="Open Graph",
                         callback=lambda: EditingWindow(
                             self.image_manager.load(self.current_image),
                             on_close=lambda: self.open(
